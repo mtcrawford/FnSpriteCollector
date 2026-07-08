@@ -1,0 +1,53 @@
+﻿.sprite-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    padding: 4px 6px 1px;
+    background: rgba(255,255,255,.08);
+    color: #cfd5df;
+    border-radius: 6px;
+    font: bold 11px/1 fn-normal,sans-serif;
+    text-transform: uppercase
+}
+
+.sprite-rarity-common {
+    background: #40464d;
+    color: #b7bfc5
+}
+
+.sprite-rarity-rare {
+    background: #00458a;
+    color: #00fffb
+}
+
+.sprite-rarity-epic {
+    background: #4c197b;
+    color: #ec27ff
+}
+
+.sprite-rarity-legendary {
+    background: #8a3c1e;
+    color: #fbc363
+}
+
+.sprite-rarity-mythic {
+    background: #7c5d26;
+    color: #fff0a6
+}
+
+.sprite-rarity-special {
+    background: linear-gradient(15deg,#5dffe4 0,#8dff9a 8%,#fff36a 16%,#60dfff 24%,#7b7cff 32%,#ff77d8 40%,#ffc45f 48%,#5dffe4 56%,#8dff9a 64%,#fff36a 72%,#60dfff 80%,#7b7cff 88%,#ff77d8 96%,#ffc45f 100%);
+    color: #000;
+    background-size: 430% 100%;
+    animation: sprite-rarity-special-anim 12s linear infinite
+}
+
+@keyframes sprite-rarity-special-anim {
+    0% {
+        background-position: 0 0
+    }
+
+    100% {
+        background-position: 98%
+    }
+}

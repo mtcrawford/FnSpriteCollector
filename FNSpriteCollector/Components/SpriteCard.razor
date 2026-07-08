@@ -1,0 +1,75 @@
+﻿@using FNSpriteCollector.Models
+@using FNSpriteCollector.Shared
+
+@using MudBlazor
+
+@inject FNSpriteCollector.Services.SpriteDbService SpriteService
+
+@if (!_isLoading)
+{
+    <MudCard>
+        <MudCardContent>
+            <MudGrid Spacing="2" Justify="Justify.FlexStart" >
+                <MudItem>
+                    <MudImage Src="@Sprite.SpriteData.ImageBase64"
+                              Width="100"
+                              Height="100"
+                              ObjectFit="ObjectFit.Contain" />                    
+                </MudItem>
+                <MudItem>
+                    <MudText Typo="Typo.h5">@Sprite.SpriteData.Name</MudText>
+                    
+                    <MudSpacer />
+
+                    <span class="sprite-pill sprite-rarity-@SpriteHelpers.GetRarityColor(Sprite.SpriteData.Rarity)">@Sprite.SpriteData.Rarity</span>
+
+                </MudItem>
+                <MudItem>
+                    <MudText Typo="Typo.body2">
+                        
+                        @if (Sprite.OwnedData.IsOwned)
+                        {
+                            <MudChip T="string" Color="Color.Info" Icon="@Icons.Material.Filled.Check" OnClick="() => ToggleOwned(Sprite.OwnedData)">Owned</MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Color="Color.Info" Variant="Variant.Text" OnClick="() => ToggleOwned(Sprite.OwnedData)">Need</MudChip>
+                        }
+
+                        <MudSpacer />
+
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+}
+else
+{
+    <SpriteLoadingProgess />
+}
+
+@code {
+    [Parameter]
+    public SpriteDTO Sprite { get; set; }
+
+    private bool _isLoading = true;                
+
+    protected override async Task OnInitializedAsync() // Load data when page first appears
+    {
+        SpriteService.OnChange += StateHasChanged;
+
+        _isLoading = false;
+        // StateHasChanged() is called automatically after the async method finishes
+    }
+
+    private async Task ToggleOwned(OwnedSprite sprite)
+    {
+        Console.WriteLine("Toggling Owned status for sprite: " + sprite.Id);
+        sprite.IsOwned = !sprite.IsOwned;
+
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+}

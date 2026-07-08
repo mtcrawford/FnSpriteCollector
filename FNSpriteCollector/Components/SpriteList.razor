@@ -1,0 +1,572 @@
+﻿@using FNSpriteCollector.Models
+@using FNSpriteCollector.Shared
+@using MudBlazor
+
+@*inject FNSpriteCollector.Services.SpriteService SpriteService *@
+@inject FNSpriteCollector.Services.SpriteDbService SpriteService
+@inject FNSpriteCollector.Services.SpriteSeederDTO Seeder
+
+
+@if (!_isLoading)
+{
+    <MudBreakpointProvider OnBreakpointChanged="BreakpointChanged">        
+        <MudContainer MaxWidth="MaxWidth.False" Class="pa-0">
+            <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                @foreach(var item in Items)
+                {
+                    <SpriteCard Sprite="item" />
+                    <br />
+                }
+            </MudHidden>
+            <MudHidden Breakpoint="Breakpoint.Xs">
+                <MudDataGrid T="SpriteDTO" Items="@Items" @ref="_spriteGrid"
+                        Loading="_isLoadingDb"
+                        Hover="true" 
+                        Bordered="true" 
+                        Striped="true" 
+                        Elevation="1" 
+                        Dense="true"
+                        FixedHeader="true"
+                        FixedFooter="true"
+                        ReadOnly="false"
+                        SortMode="SortMode.Multiple"
+                        ColumnResizeMode="ResizeMode.Column"
+                        Filterable="true" 
+                        QuickFilter="@_quickFilter"
+                        EditMode="DataGridEditMode.Cell"
+                        Breakpoint="Breakpoint.Xs"
+                        Style="width: 100%; "
+                        Class="mud-table-full-width">
+
+                    <ToolBarContent>
+                        <MudStack>
+                            <MudToggleGroup T="string" 
+                                    Outlined="true" 
+                                    Delimiters="true" 
+                                    Size="Size.Small" 
+                                    Color="@Color.Primary" 
+                                    CheckMark="false" 
+                                    Style="width: 15rem"
+                                    Vertical="@_vertical"
+                                    ValueChanged="ToggleSpritesOwned"
+                                    Value="@_ownedFilter">
+                                <MudToggleItem Value="@("All")" />
+                                <MudToggleItem Value="@("Owned")" />
+                                <MudToggleItem Value="@("Need")" />
+                            </MudToggleGroup>
+                        </MudStack>
+
+                        <MudSpacer />
+
+                        <MudStack>
+                            <MudToggleGroup T="bool"
+                                            Outlined="true"
+                                            Delimiters="true"
+                                            Size="Size.Small"
+                                            Color="@Color.Primary"
+                                            CheckMark="false"                                            
+                                            Style="width: 15rem"
+                                            Vertical="@_vertical"
+                                            ValueChanged="ToggleQuickList"
+                                            Value="@_quickList">
+                                <MudToggleItem Value="false">Detailed</MudToggleItem> 
+                                <MudToggleItem Value="true">Simple</MudToggleItem>
+                            </MudToggleGroup>
+                        </MudStack>
+
+                        <MudSpacer />
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Primary" 
+                                   hidden="@_vertical"
+                                   OnClick="() => ResetGrid()">
+                            Reset Grid
+                        </MudButton>
+                        <MudSpacer />
+
+                        <MudTextField @bind-Value="_searchString" 
+                            Placeholder="Search" 
+                            Adornment="Adornment.End" 
+                            Immediate="true"
+                            AdornmentIcon="@Icons.Material.Filled.Search" 
+                            IconSize="Size.Medium" 
+                            Class="mt-0">
+                        </MudTextField>
+                    </ToolBarContent>
+        
+                    <GroupTemplate>
+                        <span style="font-weight:bold">
+                            @context.Title: @context.Grouping.Key Count: @context.Grouping.Count()
+                            @if (context.DataGrid.FilteredItems.Count() != 0)
+                            {
+                                @string.Format(" Percentage: {0:P1}", context.Grouping.Count() / ((double)context.DataGrid.FilteredItems.Count()))
+                            }
+                        </span>
+                    </GroupTemplate>
+
+                    <Columns>
+                        @* Image column *@
+                        <TemplateColumn Title="Image" Width="50px" Resizable="true" Editable="false" Hideable="true">
+                            <CellTemplate>
+                                @if (!string.IsNullOrEmpty(context.Item.SpriteData.ImageBase64))
+                                {
+                                    <MudTooltip Text="" Arrow="true" Placement="Placement.Right" Delay="100">
+                                        <ChildContent>
+                                                <MudImage Src="@context.Item.SpriteData.ImageBase64"
+                                                      Width="40"
+                                                      Height="40"
+                                                      ObjectFit="ObjectFit.Contain" />
+                                        </ChildContent>
+                                        <TooltipContent>
+                                            <div style="padding: 8px;">
+                                                    <MudImage Src="@context.Item.SpriteData.ImageBase64"
+                                                            Width="250"
+                                                            Height="250"
+                                                            ObjectFit="ObjectFit.Contain"
+                                                            Elevation="3" />
+                                                <MudText Typo="Typo.body2" Align=   "Align.Center" Class="mt-2">
+                                                        @context.Item.SpriteData.Name
+                                                </MudText>
+                                            </div>
+                                        </TooltipContent>
+                                    </MudTooltip>
+                                }
+                                else
+                                {
+                                    <MudText Color="Color.Warning">No Image</MudText>
+                                }
+                            </CellTemplate> 
+                        </TemplateColumn>
+
+                        <PropertyColumn Property="x => x.SpriteData.Name" Title="Sprite" 
+                                        Width="60px"
+                                        Resizable="true" 
+                                        Editable="false"
+                                        Hideable="true" />
+
+                        <PropertyColumn Property="x => x.OwnedData.Level" Title="Level" 
+                                        Width="10px"
+                                        Resizable="true" 
+                                        Editable="true"
+                                        Hideable="true"
+                                        Hidden="_quickList">
+                                <EditTemplate>
+                                    <MudSelect Value="context.Item.OwnedData.Level"
+                                               ValueChanged="(int newValue) => OnLevelChanged(context.Item.OwnedData, newValue)"
+                                               Required RequiredError="You must select a Level!!!" 
+                                                Margin="@Margin.Dense">
+                                        <MudSelectItem Value="1">1</MudSelectItem>
+                                        <MudSelectItem Value="2">2</MudSelectItem>
+                                        <MudSelectItem Value="3">3</MudSelectItem>
+                                        <MudSelectItem Value="4">4</MudSelectItem>
+                                        <MudSelectItem Value="5">5</MudSelectItem>
+                                    </MudSelect>
+                                </EditTemplate> 
+                        </PropertyColumn>
+
+                        <PropertyColumn Property="x => x.OwnedData.IsMax" Title="Maxed" 
+                                        Resizable="true" 
+                                        Editable="false" 
+                                        Groupable="true" 
+                                        Hidden="_quickList"
+                                        Hideable="true"
+                                        AggregateDefinition="_maxed">
+                            <CellTemplate>
+                                @if (context.Item.OwnedData.IsMax)
+                                {
+                                    <MudChip Color="Color.Info" OnClick="() => ToggleMax(context.Item.OwnedData)">Max Level</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Warning" OnClick="() => ToggleMax(context.Item.OwnedData)">No</MudChip>
+                                }
+                            </CellTemplate>
+                        </PropertyColumn>
+
+                        <PropertyColumn Property="x => x.SpriteData.Variant" Title="Variant" 
+                                        Resizable="true" 
+                                        Editable="false" 
+                                        Groupable="true" 
+                                        Hideable="true"
+                                        Hidden="_quickList || _smallScreen" />
+
+                        <PropertyColumn Property="x => x.SpriteData.Rarity" Title="Rarity" 
+                                        Resizable="true" 
+                                        Editable="false" 
+                                        Groupable="true" 
+                                        Hideable="true" 
+                                        Hidden="_quickList">
+                            <CellTemplate>
+                                <span class="sprite-pill sprite-rarity-@SpriteHelpers.GetRarityColor(context.Item.SpriteData.Rarity)">
+                                    @context.Item.SpriteData.Rarity
+                                </span>
+                            </CellTemplate>
+                            <GroupTemplate>
+                                @{
+                                    var rarityColor = SpriteHelpers.GetRarityColor((SpriteRarity)context.Grouping.Key!);
+
+                                    <div class="d-flex align-center">
+                                        <span class="sprite-pill sprite-rarity-@rarityColor">@context.Grouping.Key</span>
+                                        <MudChip Variant="Variant.Outlined" Size="Size.Small" Class="ml-2">
+                                            @context.Grouping.Count()
+                                        </MudChip>
+                                    </div>
+                                }
+                            </GroupTemplate>
+                        </PropertyColumn>
+
+                        <PropertyColumn Property="x => x.SpriteData.Family" Title="Family" 
+                                        Resizable="true" 
+                                        Editable="false" 
+                                        Groupable="true" 
+                                        Hideable="true" 
+                                        Breakpoint="Breakpoint.Md"
+                                        Hidden="_quickList">
+
+                            <GroupTemplate>
+                                @{
+                                    string img = string.Empty;
+
+                                    if (context.Grouping.Key != null)
+                                    {                                                                
+                                        img = BaseSprites.FirstOrDefault(s => s.Family == (SpriteFamily)context.Grouping.Key)?.ImageBase64 ?? string.Empty;
+                                    }
+                                                        
+                                    <div class="d-flex align-center">
+                                        <MudImage Src="@img"
+                                                    Width="30"
+                                                    Height="30"
+                                                    ObjectFit="ObjectFit.Contain" />
+                                        <span style="font-weight:bold">@context.Grouping.Key</span>
+                                        <MudChip Variant="Variant.Outlined" Size="Size.Small" Class="ml-2">
+                                            @context.Grouping.Count()
+                                        </MudChip>
+                                    </div>
+                                }
+                            </GroupTemplate>
+                        </PropertyColumn>
+
+                        <PropertyColumn Property="x => x.OwnedData.IsOwned" Title="Owned" 
+                                        Resizable="true"  
+                                        Editable="false" 
+                                        Groupable="true"
+                                        Hideable="true"
+                                        AggregateDefinition="_ownedCount">
+                            <CellTemplate>
+                                    @if (context.Item.OwnedData.IsOwned)
+                                    {
+                                        <MudChip T="string" Color="Color.Info" 
+                                                Icon="@Icons.Material.Filled.Check" 
+                                                OnClick="() => ToggleOwned(context.Item.OwnedData)">
+                                            Owned
+                                        </MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudChip Color="Color.Info" 
+                                                Variant="Variant.Text" 
+                                                OnClick="() => ToggleOwned(context.Item.OwnedData)">
+                                            Need
+                                        </MudChip>
+                                    }
+                            </CellTemplate>
+                        </PropertyColumn>
+
+                        <PropertyColumn Property="x => x.OwnedData.IsAlive" Title="Status" 
+                                        Editable="false" 
+                                        Groupable="true"
+                                        Hidden="_quickList"
+                                        Hideable="true"
+                                        AggregateDefinition="_aliveCount">
+                            <CellTemplate>
+                                @if(context.Item.OwnedData.IsAlive)
+                                {
+                                    <MudChip Color="Color.Success" OnClick="() => ToggleAlive(context.Item.OwnedData)">Alive</MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip Color="Color.Error" OnClick="() => ToggleAlive(context.Item.OwnedData)">Dead</MudChip>
+                                }
+                            </CellTemplate>
+                        </PropertyColumn>            
+                    </Columns>
+                </MudDataGrid>
+            </MudHidden>
+
+            @if (_isLoadingDb)
+            {
+                <br />
+                <SpriteLoadingProgess />
+            }
+
+        </MudContainer>    
+    </MudBreakpointProvider>
+}
+else
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+
+
+@code {
+    private Breakpoint _currentBreakpoint;
+    private MudDataGrid<SpriteDTO>? _spriteGrid;
+
+    // Loading Variables
+    private bool _isLoading = true;
+    private bool _isLoadingDb = true;
+
+    // Filter Variables
+    private string _searchString = string.Empty;
+    private string _ownedFilter = "All";
+    private bool _quickList = false;
+    private bool _smallScreen = false;
+    private bool _vertical = false;
+
+    // Dataset
+    private List<SpriteDTO> Items = new();
+
+    private List<FnSprite> BaseSprites = new();
+
+
+    protected override async Task OnInitializedAsync() // Load data when page first appears
+    {
+        SpriteService.OnChange += StateHasChanged;        
+
+        _isLoading = false;        
+        // StateHasChanged() is called automatically after the async method finishes
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender) // JavaScript interop / DOM work
+    {
+        if (firstRender)
+        {
+            // Safe to call JS interop here
+            await Seeder.SeedInitialSpritesAsync();
+
+            await SpriteService.LoadSpritesAsync();
+
+            Items = SpriteService.SpritesCollection;
+
+            LoadBaseSprites();
+
+            _isLoadingDb = false;
+
+            StateHasChanged();
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    // Populate Base sprites
+    private void LoadBaseSprites()
+    {
+        foreach (var s in Items.FindAll(x => x.SpriteData.Variant == SpriteVariant.Base))
+        {
+            BaseSprites.Add(s.SpriteData);            
+        }        
+    }    
+
+    private async Task SaveAfterChange()
+    {
+        //await SpriteService.SaveSpritesAsync();
+        Console.WriteLine("SaveAfterChange called");
+        StateHasChanged();
+    }
+
+    private async Task<DataGridEditFormAction> CommittedItemChanged(SpriteDTO item)
+    {
+        Console.WriteLine($"Committed changes for {item.SpriteData.Name} (Owned: {item.OwnedData.IsOwned})");
+        await SpriteService.UpdateSpriteAsync(item);
+
+        return DataGridEditFormAction.Close;
+    }
+
+    // Quick Filter - filter globally across multiple columns with the same input
+    private Func<SpriteDTO, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (x.SpriteData.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.SpriteData.Variant.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if (x.SpriteData.Rarity.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        if ($"{x.OwnedData.Level}".Contains(_searchString))
+            return true;
+
+        return false;
+    };
+
+    private void ToggleSpritesOwned(string value)
+    {
+        _ownedFilter = value;
+
+        switch (_ownedFilter)
+        {
+            case "All":
+                Items = SpriteService.SpritesCollection;
+                break;
+
+            case "Owned":
+                Items = SpriteService.SpritesCollection.Where(x => x.OwnedData.IsOwned).ToList();
+                break;
+
+            case "Need":
+                Items = SpriteService.SpritesCollection.Where(x => !x.OwnedData.IsOwned).ToList();
+                break;
+
+            default:
+                Items = SpriteService.SpritesCollection;
+                break;
+        }
+
+        StateHasChanged();
+    }
+
+    private void ToggleQuickList()
+    {
+        _quickList = !_quickList;
+        StateHasChanged();
+    }
+
+    private async Task ToggleOwned(OwnedSprite sprite)
+    {
+        Console.WriteLine("Toggling Owned status for sprite: " + sprite.Id);
+        sprite.IsOwned = !sprite.IsOwned;
+
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+
+    private async Task ToggleAlive(OwnedSprite sprite)
+    {
+        Console.WriteLine("Toggling Alive status for sprite: " + sprite.Id); 
+        sprite.IsAlive = !sprite.IsAlive;
+
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+
+    private async Task ToggleMax(OwnedSprite sprite)
+    {
+        Console.WriteLine("Toggling Max status for sprite: " + sprite.Id);
+        sprite.IsMax = !sprite.IsMax;
+
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+
+    private async Task OnLevelChanged(OwnedSprite sprite, int newValue)
+    {
+        Console.WriteLine($"Updating Level for {sprite.Id} from {sprite.Level} to {newValue}");
+        sprite.Level = newValue;
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+
+    private async Task ResetGrid()
+    {
+        if (_spriteGrid is not null)
+        {
+            ResetFilters();
+
+            await _spriteGrid.ClearFiltersAsync();
+
+            await _spriteGrid.ReloadServerData();
+        }
+    }
+
+    private void ResetFilters()
+    {
+        _searchString = string.Empty;
+        _ownedFilter = "All";
+        Items = SpriteService.SpritesCollection;
+        StateHasChanged();
+    }
+
+
+    // Aggregates for Data Grid
+
+    AggregateDefinition<SpriteDTO> _maxed = new AggregateDefinition<SpriteDTO>
+    {
+
+        Type = AggregateType.Custom,
+        CustomAggregate = x =>
+        {
+            var count = x.Count(z => z.OwnedData.IsMax);
+            return $"Maxed: {count}";
+        }
+    };
+
+    AggregateDefinition<SpriteDTO> _ownedCount = new AggregateDefinition<SpriteDTO>
+    {
+
+        Type = AggregateType.Custom,
+        CustomAggregate = x =>
+        {
+            var count = x.Count(z => z.OwnedData.IsOwned);
+            return $"Owned: {count}";
+        }
+    };
+
+    AggregateDefinition<SpriteDTO> _aliveCount = new AggregateDefinition<SpriteDTO>
+    {
+
+        Type = AggregateType.Custom,
+        CustomAggregate = x =>
+        {
+            var count = x.Count(z => z.OwnedData.IsAlive);
+            var deadCount = x.Count(z => !z.OwnedData.IsAlive);
+
+            return $"Alive: {count}, Dead: {deadCount}";
+        }
+    };
+
+    private void BreakpointChanged(Breakpoint breakpoint)
+    {
+        Console.WriteLine("BP change: {0}", breakpoint);
+        _currentBreakpoint = breakpoint;
+
+        bool small = false;
+        bool vertical = false;
+
+        switch (_currentBreakpoint)
+        {
+            case Breakpoint.Sm:
+            case Breakpoint.SmAndDown:
+            case Breakpoint.Xs:
+                small = true;
+                vertical = true;
+                break;
+            
+            case Breakpoint.MdAndDown:
+            case Breakpoint.Md:
+                vertical = true;
+                break;
+            default:
+                small = false;
+                break;
+        }
+
+        _smallScreen = small;
+        _vertical = vertical;
+
+        Console.WriteLine("Small Screen?: {0}   Vertical?: {1}", _smallScreen, _vertical);
+
+        StateHasChanged();        
+    }
+
+    public void Dispose()
+    {
+        SpriteService.OnChange -= StateHasChanged;
+    }
+}

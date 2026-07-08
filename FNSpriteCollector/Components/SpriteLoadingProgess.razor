@@ -1,0 +1,18 @@
+﻿@using MudBlazor
+
+<div style="display: flex; justify-content: center; align-items: center;">
+    <MudProgressCircular Color="Color.Info"
+                            Style="height:100px; width:100px;"
+                            Indeterminate="true">
+        <ChildContent>
+            <MudStack Spacing="0" AlignItems="AlignItems.Center" Justify="Justify.Center">
+                <MudText Typo="Typo.subtitle2">Loading</MudText>
+                <MudText Typo="Typo.subtitle2">Sprites</MudText>
+            </MudStack>
+        </ChildContent>
+    </MudProgressCircular>
+</div>
+
+@code {
+
+}
