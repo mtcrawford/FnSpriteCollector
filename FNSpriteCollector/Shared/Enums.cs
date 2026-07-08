@@ -40,5 +40,8 @@ public enum SpriteFamily
     Striker,
     Aura,
     Boss,
-    Grim
+    Grim,
+    Air,
+    Seven,
+    Batman
 }
