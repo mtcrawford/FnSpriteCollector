@@ -5,7 +5,7 @@ namespace FNSpriteCollector.Services;
 
 public class SpriteSeederDTO
 {
-    const int _itemCount = 61; // Total number of sprites to seed
+    const int _itemCount = 66; // Total number of sprites to seed
 
     private readonly HttpClient _http;
     private readonly SpriteDbService _spriteService;
@@ -586,6 +586,53 @@ public class SpriteSeederDTO
                 Variant = SpriteVariant.Galaxy,
                 Family = SpriteFamily.Grim,
                 ImageBase64 = await GetImageAsBase64Async("grim_galaxy.webp")
+            },
+
+            // Holofoil
+            new FnSprite
+            {
+                Id = 62,
+                Name = "Holofoil Water",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.Water,
+                ImageBase64 = await GetImageAsBase64Async("water_holofoil.webp")
+            },
+            new FnSprite
+            {
+                Id = 63,
+                Name = "Holofoil Fire",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.Fire,
+                ImageBase64 = await GetImageAsBase64Async("fire_holofoil.webp")
+            },
+            new FnSprite
+            {
+                Id = 64,
+                Name = "Holofoil Ghost",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.Ghost,
+                ImageBase64 = await GetImageAsBase64Async("ghost_holofoil.webp")
+            },
+            new FnSprite
+            {
+                Id = 65,
+                Name = "Holofoil King",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.King,
+                ImageBase64 = await GetImageAsBase64Async("king_holofoil.webp")
+            },
+            new FnSprite
+            {
+                Id = 66,
+                Name = "Holofoil Striker",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.Striker,
+                ImageBase64 = await GetImageAsBase64Async("striker_holofoil.webp")
             },
 
         };
