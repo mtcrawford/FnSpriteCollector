@@ -11,14 +11,118 @@
 {
     <MudBreakpointProvider OnBreakpointChanged="BreakpointChanged">        
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-0">
+            <MudPaper Elevation="25">
+                <MudToolBar>
+                    <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert"
+                                 AriaLabel="Open user menu">
+                            
+                            <MudMenuItem Label="Show All"
+                                         Icon="@(_ownedFilter == "All" ? Icons.Material.Filled.Check : null)"
+                                         OnClick="@(() => ToggleSpritesOwned("All"))" />
+                            <MudMenuItem Label="Show Owned" 
+                                         Icon="@(_ownedFilter == "Owned" ? Icons.Material.Filled.Check : null)"
+                                         OnClick="@(() => ToggleSpritesOwned("Owned"))"/>
+                            <MudMenuItem Label="Show Need" 
+                                         Icon="@(_ownedFilter == "Need" ? Icons.Material.Filled.Check : null)"
+                                         OnClick="@(() => ToggleSpritesOwned("Need"))"/>
+                            
+                            <MudDivider />
+
+                            <MudMenuItem Label="Detailed List"
+                                         Icon="@(!_quickList ? Icons.Material.Filled.Check : null)"
+                                         OnClick="ToggleQuickList" />
+                            <MudMenuItem Label="Simple List" 
+                                         Icon="@(_quickList ? Icons.Material.Filled.Check : null)"
+                                         OnClick="ToggleQuickList"/>
+                        </MudMenu>                    
+                    </MudHidden>                    
+
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        
+                    <MudStack>
+                        <MudToggleGroup T="string"
+                                        Outlined="true"
+                                        Delimiters="true"
+                                        Size="Size.Small"
+                                        Color="@Color.Primary"
+                                        CheckMark="false"
+                                        Style="width: 11rem"
+                                        ValueChanged="ToggleSpritesOwned"
+                                        Value="@_ownedFilter">
+                            <MudToggleItem Value="@("All")" />
+                            <MudToggleItem Value="@("Owned")" />
+                            <MudToggleItem Value="@("Need")" />
+                        </MudToggleGroup>
+                    </MudStack>
+
+                    <MudSpacer />
+
+                    <MudStack>
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                            <MudButton Variant="@(_quickList ? Variant.Filled : Variant.Outlined)"
+                                       Size="Size.Small"
+                                       OnClick="ToggleQuickList"
+                                       Color="Color.Primary">
+                                @(_quickList ? "Simple" : "Detailed")
+                            </MudButton>
+                        </MudHidden>
+
+                        <MudHidden Breakpoint="Breakpoint.Xs">
+                            <MudToggleGroup T="bool"
+                                            Outlined="true"
+                                            Delimiters="true"
+                                            Size="Size.Small"
+                                            Color="@Color.Primary"
+                                            CheckMark="false"
+                                            Style="width: 11rem"
+                                            ValueChanged="ToggleQuickList"
+                                            Value="@_quickList">
+                                <MudToggleItem Value="false">Detailed</MudToggleItem>
+                                <MudToggleItem Value="true">Simple</MudToggleItem>
+                            </MudToggleGroup>
+                        </MudHidden>                           
+                        
+                    </MudStack>
+
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Primary"
+                               hidden="@_vertical"
+                               OnClick="() => ResetGrid()">
+                        Reset Grid
+                    </MudButton>
+                    <MudSpacer />
+                    
+                    </MudHidden>
+
+                    <MudTextField @bind-Value="_searchString"
+                                  Placeholder="Search"
+                                  Adornment="Adornment.End"
+                                  Immediate="true"
+                                  AdornmentIcon="@Icons.Material.Filled.Search"
+                                  IconSize="Size.Medium"
+                                  Class="mt-0">
+                    </MudTextField>
+
+                    <MudMenu Icon="@Icons.Material.Filled.Settings"
+                             AriaLabel="Open settings menu">
+                        <MudMenuItem Label="Placeholder" />
+                    </MudMenu>
+                </MudToolBar>
+            </MudPaper>
+            
             <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
+                <br />
+
                 @foreach(var item in Items)
                 {
                     <SpriteCard Sprite="item" />
                     <br />
                 }
             </MudHidden>
-            <MudHidden Breakpoint="Breakpoint.Xs">
+
+            <MudHidden Breakpoint="Breakpoint.Sm">
                 <MudDataGrid T="SpriteDTO" Items="@Items" @ref="_spriteGrid"
                         Loading="_isLoadingDb"
                         Hover="true" 
@@ -37,62 +141,7 @@
                         Breakpoint="Breakpoint.Xs"
                         Style="width: 100%; "
                         Class="mud-table-full-width">
-
-                    <ToolBarContent>
-                        <MudStack>
-                            <MudToggleGroup T="string" 
-                                    Outlined="true" 
-                                    Delimiters="true" 
-                                    Size="Size.Small" 
-                                    Color="@Color.Primary" 
-                                    CheckMark="false" 
-                                    Style="width: 15rem"
-                                    Vertical="@_vertical"
-                                    ValueChanged="ToggleSpritesOwned"
-                                    Value="@_ownedFilter">
-                                <MudToggleItem Value="@("All")" />
-                                <MudToggleItem Value="@("Owned")" />
-                                <MudToggleItem Value="@("Need")" />
-                            </MudToggleGroup>
-                        </MudStack>
-
-                        <MudSpacer />
-
-                        <MudStack>
-                            <MudToggleGroup T="bool"
-                                            Outlined="true"
-                                            Delimiters="true"
-                                            Size="Size.Small"
-                                            Color="@Color.Primary"
-                                            CheckMark="false"                                            
-                                            Style="width: 15rem"
-                                            Vertical="@_vertical"
-                                            ValueChanged="ToggleQuickList"
-                                            Value="@_quickList">
-                                <MudToggleItem Value="false">Detailed</MudToggleItem> 
-                                <MudToggleItem Value="true">Simple</MudToggleItem>
-                            </MudToggleGroup>
-                        </MudStack>
-
-                        <MudSpacer />
-                        <MudButton Variant="Variant.Outlined"
-                                   Color="Color.Primary" 
-                                   hidden="@_vertical"
-                                   OnClick="() => ResetGrid()">
-                            Reset Grid
-                        </MudButton>
-                        <MudSpacer />
-
-                        <MudTextField @bind-Value="_searchString" 
-                            Placeholder="Search" 
-                            Adornment="Adornment.End" 
-                            Immediate="true"
-                            AdornmentIcon="@Icons.Material.Filled.Search" 
-                            IconSize="Size.Medium" 
-                            Class="mt-0">
-                        </MudTextField>
-                    </ToolBarContent>
-        
+                                
                     <GroupTemplate>
                         <span style="font-weight:bold">
                             @context.Title: @context.Grouping.Key Count: @context.Grouping.Count()
