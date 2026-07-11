@@ -96,12 +96,13 @@
                     
                     </MudHidden>
 
-                    <MudTextField @bind-Value="_searchString"
+                    <MudTextField T="string"
                                   Placeholder="Search"
                                   Adornment="Adornment.End"
                                   Immediate="true"
                                   AdornmentIcon="@Icons.Material.Filled.Search"
                                   IconSize="Size.Medium"
+                                  ValueChanged="FilterChanged"
                                   Class="mt-0">
                     </MudTextField>
 
@@ -138,7 +139,6 @@
                         Filterable="true" 
                         QuickFilter="@_quickFilter"
                         EditMode="DataGridEditMode.Cell"
-                        Breakpoint="Breakpoint.Xs"
                         Style="width: 100%; "
                         Class="mud-table-full-width">
                                 
@@ -450,6 +450,28 @@ else
 
         return false;
     };
+
+    private void FilterChanged(string value)
+    {
+        _searchString = value;
+
+        Console.WriteLine("Search: {0}", _searchString);
+
+        if (string.IsNullOrWhiteSpace(_searchString))
+        {
+            Items = SpriteService.SpritesCollection;
+            StateHasChanged();
+            return; 
+        }
+
+        Items = SpriteService.SpritesCollection.Where(x => 
+                    x.SpriteData.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+                    x.SpriteData.Variant.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+                    x.SpriteData.Rarity.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+                    $"{x.OwnedData.Level}".Contains(_searchString)).ToList();
+
+        StateHasChanged();
+    }
 
     private void ToggleSpritesOwned(string value)
     {
