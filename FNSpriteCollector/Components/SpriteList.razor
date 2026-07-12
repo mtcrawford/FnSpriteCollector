@@ -117,9 +117,13 @@
                 <br />
                 @if(_quickList)
                 {
+
                     @foreach (var item in Items.GroupBy(x => x.SpriteData.Family))
                     {
+                        var baseSprite = BaseSprites.FirstOrDefault(s => s.Family == item.Key);
+                        
                         <SpriteCardGroup 
+                            BaseSprite="baseSprite"
                             Sprites="item.ToList()" />
                         <br />
                     }

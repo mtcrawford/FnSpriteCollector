@@ -5,8 +5,8 @@
 
 @inject FNSpriteCollector.Services.SpriteDbService SpriteService
 
-@if (!_isLoading)
-{
+@if (!_isLoading && BaseSprite.Id > 0)
+{    
     <MudCard>
         <MudCardContent>
             <MudGrid Spacing="2" Justify="Justify.FlexStart">
@@ -53,7 +53,7 @@
                                     }
                                     else if (item.OwnedData.IsOwned)
                                     {
-                                        text = "Owned";
+                                        text = $"Owned ({item.OwnedData.Level})";
                                         variantColor = Variant.Filled;
                                         chipColor = Color.Info;
                                     }
@@ -94,19 +94,15 @@
 }
 else
 {
-    <SpriteLoadingProgess />
+    if (BaseSprite.Id > 0)
+    {
+        <SpriteLoadingProgess />                 
+    }
 }
 
 @code {
-    public FnSprite BaseSprite = new FnSprite
-    {
-        Id = -1,
-        Name = "No Sprite",
-        Rarity = SpriteRarity.Rare,
-        Variant = SpriteVariant.Base,
-        Family = SpriteFamily.Water,
-        ImageBase64 = "No Image"
-    };
+    [Parameter]
+    public FnSprite BaseSprite { get; set; }
 
     [Parameter]
     public List<SpriteDTO> Sprites { get; set; }
@@ -116,24 +112,6 @@ else
     protected override async Task OnInitializedAsync() // Load data when page first appears
     {
         SpriteService.OnChange += StateHasChanged;
-
-        try
-        {
-            BaseSprite = Sprites.Where(x => x.SpriteData.Variant == SpriteVariant.Base).First().SpriteData;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("No Base Sprite found.");
-            BaseSprite = new FnSprite
-            {
-                Id = -1,
-                Name = "No Sprite",
-                Rarity = SpriteRarity.Rare,
-                Variant = SpriteVariant.Base,
-                Family = SpriteFamily.Water,
-                ImageBase64 = "No Image"
-            };
-        }
         
         _isLoading = false;
         // StateHasChanged() is called automatically after the async method finishes
@@ -142,20 +120,23 @@ else
     private async Task ToggleSprite(OwnedSprite sprite, string newStatus)
     {
         Console.WriteLine($"Toggling status for sprite: {sprite.Id} to {newStatus}");
-        
+
         switch (newStatus)
         {
             case "Need":
                 sprite.IsOwned = false;
                 sprite.IsMax = false;
-                break;
+                sprite.Level = 1;
+                break;  
             case "Owned":
                 sprite.IsOwned = true;
                 sprite.IsMax = false;
+                sprite.Level = 1;
                 break;
             case "Maxed":
                 sprite.IsOwned = true;
                 sprite.IsMax = true;
+                sprite.Level = 5;
                 break;
             default:
                 Console.WriteLine($"Unknown status: {newStatus}");
