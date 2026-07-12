@@ -12,7 +12,7 @@
     <MudBreakpointProvider OnBreakpointChanged="BreakpointChanged">        
         <MudContainer MaxWidth="MaxWidth.False" Class="pa-0">
             <MudPaper Elevation="25">
-                <MudToolBar>
+                <MudToolBar Dense="true">
                     <MudHidden Breakpoint="Breakpoint.MdAndUp">
                         <MudMenu Icon="@Icons.Material.Filled.MoreVert"
                                  AriaLabel="Open user menu">
@@ -135,7 +135,7 @@
                 
             </MudHidden>
 
-            <MudHidden Breakpoint="Breakpoint.Sm">
+            <MudHidden Breakpoint="Breakpoint.SmAndDown">
                 <MudDataGrid T="SpriteDTO" Items="@Items" @ref="_spriteGrid"
                         Loading="_isLoadingDb"
                         Hover="true" 
