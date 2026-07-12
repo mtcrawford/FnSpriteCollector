@@ -16,7 +16,7 @@
                               Height="80"
                               ObjectFit="ObjectFit.Contain" />
                 </MudItem>
-                <MudItem Class="pt-3">
+                <MudItem Class="pt-4">
                     <MudText Typo="Typo.h5">@BaseSprite.Family</MudText>
 
                     <MudSpacer />
@@ -38,31 +38,49 @@
                                 <MudText Typo="Typo.subtitle1" class="d-flex justify-center">
                                     @item.SpriteData.Variant
                                 </MudText>
+                                @{
+                                    string text = string.Empty;
+                                    Variant variantColor = Variant.Text;
+                                    MudBlazor.Color chipColor = Color.Info;
+                                    string icon = string.Empty;
 
-                                @if (item.OwnedData.IsMax)
-                                {
-                                    <MudChip T="string" Color="Color.Info">
-                                        Maxed
-                                    </MudChip>
-                                }
-                                else
-                                {
-                                    @if (item.OwnedData.IsOwned)
+                                    if(item.OwnedData.IsMax)
                                     {
-                                        <MudChip T="string" Color="Color.Info"
-                                                    Icon="@Icons.Material.Filled.Check"
-                                                    OnClick="() => ToggleOwned(item.OwnedData)">
-                                            Owned
-                                        </MudChip>
+                                        text = "Maxed";
+                                        variantColor = Variant.Filled;
+                                        chipColor = Color.Success;
+                                        icon = Icons.Material.Filled.Check;
+                                    }
+                                    else if (item.OwnedData.IsOwned)
+                                    {
+                                        text = "Owned";
+                                        variantColor = Variant.Filled;
+                                        chipColor = Color.Info;
                                     }
                                     else
                                     {
-                                        <MudChip T="string" Color="Color.Info"
-                                                    Variant="Variant.Text"
-                                                    OnClick="() => ToggleOwned(item.OwnedData)">
-                                            Need
-                                        </MudChip>
+                                        text = "Need";
+                                        variantColor = Variant.Text;
+                                        chipColor = Color.Info;
                                     }
+
+                                    <MudMenu>
+                                        <ActivatorContent>
+                                            <MudChip T="string" 
+                                                    Icon="@icon" 
+                                                    Color="@chipColor" 
+                                                    Variant="@variantColor"
+                                                    OnClick="@(() => context.ToggleAsync())">
+                                                @text
+                                            </MudChip>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <MudMenuItem Label="Need" OnClick="@(() => ToggleSprite(item.OwnedData, "Need"))"/>
+                                            <MudMenuItem Label="Owned" OnClick="@(() => ToggleSprite(item.OwnedData, "Owned"))"/>
+                                            <MudMenuItem Label="Maxed" OnClick="@(() => ToggleSprite(item.OwnedData, "Maxed"))"/>
+                                        </ChildContent>
+                                    </MudMenu>
+
                                 }
                             </MudPaper>
                         </MudItem>
@@ -80,7 +98,15 @@ else
 }
 
 @code {
-    public FnSprite BaseSprite { get; set; }
+    public FnSprite BaseSprite = new FnSprite
+    {
+        Id = -1,
+        Name = "No Sprite",
+        Rarity = SpriteRarity.Rare,
+        Variant = SpriteVariant.Base,
+        Family = SpriteFamily.Water,
+        ImageBase64 = "No Image"
+    };
 
     [Parameter]
     public List<SpriteDTO> Sprites { get; set; }
@@ -90,20 +116,53 @@ else
     protected override async Task OnInitializedAsync() // Load data when page first appears
     {
         SpriteService.OnChange += StateHasChanged;
-        
-        BaseSprite = Sprites.Where(x => x.SpriteData.Variant == SpriteVariant.Base).First().SpriteData;
+
+        try
+        {
+            BaseSprite = Sprites.Where(x => x.SpriteData.Variant == SpriteVariant.Base).First().SpriteData;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("No Base Sprite found.");
+            BaseSprite = new FnSprite
+            {
+                Id = -1,
+                Name = "No Sprite",
+                Rarity = SpriteRarity.Rare,
+                Variant = SpriteVariant.Base,
+                Family = SpriteFamily.Water,
+                ImageBase64 = "No Image"
+            };
+        }
         
         _isLoading = false;
         // StateHasChanged() is called automatically after the async method finishes
     }
 
-    private async Task ToggleOwned(OwnedSprite sprite)
+    private async Task ToggleSprite(OwnedSprite sprite, string newStatus)
     {
-        Console.WriteLine("Toggling Owned status for sprite: " + sprite.Id);
-        sprite.IsOwned = !sprite.IsOwned;
+        Console.WriteLine($"Toggling status for sprite: {sprite.Id} to {newStatus}");
+        
+        switch (newStatus)
+        {
+            case "Need":
+                sprite.IsOwned = false;
+                sprite.IsMax = false;
+                break;
+            case "Owned":
+                sprite.IsOwned = true;
+                sprite.IsMax = false;
+                break;
+            case "Maxed":
+                sprite.IsOwned = true;
+                sprite.IsMax = true;
+                break;
+            default:
+                Console.WriteLine($"Unknown status: {newStatus}");
+                return; // Exit the method if the status is unknown
+        }
 
         await SpriteService.UpdateOwnedSpriteAsync(sprite);
-
         StateHasChanged();
     }
 }
