@@ -1,4 +1,6 @@
-﻿namespace FNSpriteCollector.Shared;
+﻿using static System.Net.WebRequestMethods;
+
+namespace FNSpriteCollector.Shared;
 
 public class SpriteHelpers
 {

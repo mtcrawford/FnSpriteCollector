@@ -345,6 +345,7 @@
             {
                 <br />
                 <SpriteLoadingProgess />
+                <MudText Typo="Typo.subtitle1" Align="Align.Center">@Seeder.Message</MudText>
             }
 
         </MudContainer>    
@@ -353,6 +354,7 @@
 else
 {
     <MudProgressCircular Indeterminate="true" />
+    <MudText Typo="Typo.subtitle1" Align="Align.Center">@Seeder.Message</MudText>
 }
 
 
@@ -379,7 +381,8 @@ else
 
     protected override async Task OnInitializedAsync() // Load data when page first appears
     {
-        SpriteService.OnChange += StateHasChanged;        
+        Seeder.OnChange += StateHasChanged;
+        SpriteService.OnChange += StateHasChanged;           
 
         _isLoading = false;        
         // StateHasChanged() is called automatically after the async method finishes
@@ -469,7 +472,7 @@ else
                     x.SpriteData.Variant.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
                     x.SpriteData.Rarity.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
                     $"{x.OwnedData.Level}".Contains(_searchString)).ToList();
-
+                            
         StateHasChanged();
     }
 
