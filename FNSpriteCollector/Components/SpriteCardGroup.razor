@@ -1,0 +1,109 @@
+﻿@using FNSpriteCollector.Models
+@using FNSpriteCollector.Shared
+
+@using MudBlazor
+
+@inject FNSpriteCollector.Services.SpriteDbService SpriteService
+
+@if (!_isLoading)
+{
+    <MudCard>
+        <MudCardContent>
+            <MudGrid Spacing="2" Justify="Justify.FlexStart">
+                <MudItem>
+                    <MudImage Src="@BaseSprite.ImageBase64"
+                              Width="80"
+                              Height="80"
+                              ObjectFit="ObjectFit.Contain" />
+                </MudItem>
+                <MudItem Class="pt-3">
+                    <MudText Typo="Typo.h5">@BaseSprite.Family</MudText>
+
+                    <MudSpacer />
+
+                    <span class="sprite-pill sprite-rarity-@SpriteHelpers.GetRarityColor(BaseSprite.Rarity)">
+                        @BaseSprite.Rarity
+                    </span>
+
+                </MudItem>
+                
+            </MudGrid>
+            <MudItem Class="mt-2" >
+                <MudGrid Spacing="4" Justify="Justify.SpaceEvenly">                    
+                    @foreach (var item in Sprites)
+                    {
+                        <MudItem>
+                            <MudPaper Outlined="true" Elevation="3">
+                                
+                                <MudText Typo="Typo.subtitle1" class="d-flex justify-center">
+                                    @item.SpriteData.Variant
+                                </MudText>
+
+                                @if (item.OwnedData.IsMax)
+                                {
+                                    <MudChip T="string" Color="Color.Info">
+                                        Maxed
+                                    </MudChip>
+                                }
+                                else
+                                {
+                                    @if (item.OwnedData.IsOwned)
+                                    {
+                                        <MudChip T="string" Color="Color.Info"
+                                                    Icon="@Icons.Material.Filled.Check"
+                                                    OnClick="() => ToggleOwned(item.OwnedData)">
+                                            Owned
+                                        </MudChip>
+                                    }
+                                    else
+                                    {
+                                        <MudChip T="string" Color="Color.Info"
+                                                    Variant="Variant.Text"
+                                                    OnClick="() => ToggleOwned(item.OwnedData)">
+                                            Need
+                                        </MudChip>
+                                    }
+                                }
+                            </MudPaper>
+                        </MudItem>
+                    }
+
+                </MudGrid>
+
+            </MudItem>
+        </MudCardContent>
+    </MudCard>
+}
+else
+{
+    <SpriteLoadingProgess />
+}
+
+@code {
+    public FnSprite BaseSprite { get; set; }
+
+    [Parameter]
+    public List<SpriteDTO> Sprites { get; set; }
+
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync() // Load data when page first appears
+    {
+        SpriteService.OnChange += StateHasChanged;
+        
+        BaseSprite = Sprites.Where(x => x.SpriteData.Variant == SpriteVariant.Base).First().SpriteData;
+        
+        _isLoading = false;
+        // StateHasChanged() is called automatically after the async method finishes
+    }
+
+    private async Task ToggleOwned(OwnedSprite sprite)
+    {
+        Console.WriteLine("Toggling Owned status for sprite: " + sprite.Id);
+        sprite.IsOwned = !sprite.IsOwned;
+
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+}

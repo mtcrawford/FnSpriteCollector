@@ -115,12 +115,24 @@
             
             <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                 <br />
-
-                @foreach(var item in Items)
+                @if(_quickList)
                 {
-                    <SpriteCard Sprite="item" />
-                    <br />
+                    @foreach (var item in Items.GroupBy(x => x.SpriteData.Family))
+                    {
+                        <SpriteCardGroup 
+                            Sprites="item.ToList()" />
+                        <br />
+                    }
                 }
+                else
+                {
+                    @foreach(var item in Items)
+                    {
+                        <SpriteCard Sprite="item" />
+                        <br />
+                    }
+                }
+                
             </MudHidden>
 
             <MudHidden Breakpoint="Breakpoint.Sm">
