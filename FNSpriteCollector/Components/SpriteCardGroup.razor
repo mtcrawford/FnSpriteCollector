@@ -227,6 +227,8 @@ else
 
         await ApplySearch();
 
+        _showBaseVariant = (_filteredSprites.Count > 0) ? true : false;
+
         StateHasChanged();
     }
 
@@ -244,12 +246,6 @@ else
                     $"{x.OwnedData.Level}".Contains(SearchString)).ToList();
 
         Console.WriteLine("Count {0} - Search {1}", _filteredSprites.Count, SearchString);
-
-        if (_filteredSprites.Count == 0 && !string.IsNullOrWhiteSpace(SearchString))
-        {
-            _showBaseVariant = false;
-        }
-
     }
 
     private async Task ToggleSprite(OwnedSprite sprite, string newStatus)
