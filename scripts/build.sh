@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd ../src/FNSpriteCollector
-docker build -t fnspritecollector . 
+cd ../
+docker build -t fnspritecollector -f ./Dockerfile .
