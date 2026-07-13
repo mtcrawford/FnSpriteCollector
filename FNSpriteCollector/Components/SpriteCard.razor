@@ -29,45 +29,48 @@
             </MudGrid>
 
             <MudItem Class="mt-2" >
-                <MudGrid Spacing="4" Justify="Justify.SpaceEvenly"> 
-                    <MudItem>                        
+                <MudGrid Spacing="4" Justify="Justify.SpaceAround"> 
+                    <MudItem xs="6" sm="3">                        
                         @if (Sprite.OwnedData.IsAlive)
                         {
                             <MudChip T="string"
-                                        Color="Color.Success"
-                                        OnClick="() => ToggleAlive(Sprite.OwnedData)">
+                                    Color="Color.Success"
+                                    OnClick="() => ToggleAlive(Sprite.OwnedData)">
                                 Alive
                             </MudChip>
                         }
                         else
                         {
                             <MudChip T="string"
-                                        Color="Color.Error"
-                                        OnClick="() => ToggleAlive(Sprite.OwnedData)">
+                                    Color="Color.Error"
+                                    OnClick="() => ToggleAlive(Sprite.OwnedData)">
                                 Dead
                             </MudChip>
                         }                        
                     </MudItem>
 
-                    <MudSpacer />
 
-                    <MudItem>
-                        <MudSelect Value="Sprite.OwnedData.Level"
-                                   Label="Level"
-                                   ValueChanged="(int newValue) => OnLevelChanged(Sprite.OwnedData, newValue)"
-                                   Required RequiredError="You must select a Level!!!"
-                                   Margin="@Margin.Dense">
-                            <MudSelectItem Value="1">1</MudSelectItem>
-                            <MudSelectItem Value="2">2</MudSelectItem>
-                            <MudSelectItem Value="3">3</MudSelectItem>
-                            <MudSelectItem Value="4">4</MudSelectItem>
-                            <MudSelectItem Value="5">5</MudSelectItem>
-                        </MudSelect>
+                    <MudItem xs="6" sm="3">
+                        <MudMenu>
+                            <ActivatorContent>
+                                <MudChip T="string"
+                                         Color="Color.Default"
+                                         Variant="Variant.Outlined"
+                                         OnClick="@(() => context.ToggleAsync())">
+                                    Level @Sprite.OwnedData.Level
+                                </MudChip>
+                            </ActivatorContent>
+                            <ChildContent>
+                                <MudMenuItem Label="Level 1" OnClick="() => OnLevelChanged(Sprite.OwnedData, 1)" />
+                                <MudMenuItem Label="Level 2" OnClick="() => OnLevelChanged(Sprite.OwnedData, 2)" />
+                                <MudMenuItem Label="Level 3" OnClick="() => OnLevelChanged(Sprite.OwnedData, 3)" />
+                                <MudMenuItem Label="Level 4" OnClick="() => OnLevelChanged(Sprite.OwnedData, 4)" />
+                                <MudMenuItem Label="Level 5" OnClick="() => OnLevelChanged(Sprite.OwnedData, 5)" />
+                            </ChildContent>
+                        </MudMenu>
                     </MudItem>
-
-                    <MudSpacer />
-
-                    <MudItem>
+                
+                    <MudItem xs="6" sm="3">
                         @if (Sprite.OwnedData.IsMax)
                         {
                             <MudChip T="string"
@@ -87,9 +90,8 @@
                         }
                     </MudItem>
 
-                    <MudSpacer />
 
-                    <MudItem>
+                    <MudItem xs="6" sm="3">
                         @if (Sprite.OwnedData.IsOwned)
                         {
                             <MudChip T="string" Color="Color.Info" 
@@ -158,6 +160,11 @@ else
     {
         Console.WriteLine("Toggling Max status for sprite: " + sprite.Id);
         sprite.IsMax = !sprite.IsMax;
+
+        if (sprite.IsMax)
+        {
+            sprite.Level = 5; // Set level to 5 if maxed
+        }
 
         await SpriteService.UpdateOwnedSpriteAsync(sprite);
 
