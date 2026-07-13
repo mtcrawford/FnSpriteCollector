@@ -26,7 +26,21 @@
                             <MudMenuItem Label="Show Need" 
                                          Icon="@(_ownedFilter == "Need" ? Icons.Material.Filled.Check : null)"
                                          OnClick="@(() => ToggleSpritesOwned("Need"))"/>
-                            
+
+                            <MudDivider />
+
+                            <MudMenuItem Label="Show All (Maxed)"
+                                         Icon="@(_maxedFilter == FilterMaxed.All ? Icons.Material.Filled.Check : null)"
+                                         OnClick="@(() => ToggleSpritesMaxed(FilterMaxed.All))" />
+
+                            <MudMenuItem Label="Show Maxed" 
+                                         Icon="@(_maxedFilter == FilterMaxed.Maxed ? Icons.Material.Filled.Check : null)"
+                                         OnClick="@(() => ToggleSpritesMaxed(FilterMaxed.Maxed))"/>
+
+                            <MudMenuItem Label="Show Not Maxed"
+                                         Icon="@(_maxedFilter == FilterMaxed.NotMaxed ? Icons.Material.Filled.Check : null)"
+                                         OnClick="@(() => ToggleSpritesMaxed(FilterMaxed.NotMaxed))"/>
+
                             <MudDivider />
 
                             <MudMenuItem Label="Detailed List"
@@ -134,7 +148,8 @@
                         <SpriteCardGroup 
                             BaseSprite="baseSprite"
                             Sprites="item.ToList()"
-                            ViewFilter="_viewFilter"/>
+                            ViewFilter="_viewFilter"
+                            MaxedFilter="_maxedFilter"/>
                         <br />
                     }
                 }
@@ -404,6 +419,7 @@ else
     private bool _sortByFamily = false;
 
     private FilterOwned _viewFilter = FilterOwned.All;
+    private FilterMaxed _maxedFilter = FilterMaxed.All;
 
     // Dataset
     private List<SpriteDTO> Items = new();
@@ -504,7 +520,7 @@ else
                     x.SpriteData.Variant.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
                     x.SpriteData.Rarity.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
                     $"{x.OwnedData.Level}".Contains(_searchString)).ToList();
-                            
+
         StateHasChanged();
     }
 
@@ -512,10 +528,23 @@ else
     {
         _ownedFilter = value;
 
+        ApplyFilters();
+    }
+
+    private void ToggleSpritesMaxed(FilterMaxed value)
+    {
+        _maxedFilter = value;
+
+        ApplyFilters();
+    }
+
+    private void ApplyFilters()
+    {
+        Items = SpriteService.SpritesCollection;
+
         switch (_ownedFilter)
         {
-            case "All":
-                Items = SpriteService.SpritesCollection;
+            case "All":                
                 _viewFilter = FilterOwned.All;
                 break;
 
@@ -527,11 +556,24 @@ else
             case "Need":
                 Items = SpriteService.SpritesCollection.Where(x => !x.OwnedData.IsOwned).ToList();
                 _viewFilter = FilterOwned.Need;
-                break;
+                StateHasChanged();
+                return;
 
             default:
                 Items = SpriteService.SpritesCollection;
                 _viewFilter = FilterOwned.All;
+                break;
+        }
+
+        switch (_maxedFilter)
+        {
+            case FilterMaxed.Maxed:
+                Items = Items.Where(x => x.OwnedData.IsMax).ToList();
+                break;
+            case FilterMaxed.NotMaxed:
+                Items = Items.Where(x => !x.OwnedData.IsMax).ToList();
+                break;
+            default:
                 break;
         }
 

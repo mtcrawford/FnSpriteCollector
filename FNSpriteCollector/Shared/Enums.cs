@@ -52,3 +52,10 @@ public enum FilterOwned
     Owned,
     Need,
 }
+
+public enum FilterMaxed
+{
+    All,
+    Maxed,
+    NotMaxed
+}

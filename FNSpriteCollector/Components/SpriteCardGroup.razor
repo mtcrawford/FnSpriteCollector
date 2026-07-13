@@ -32,12 +32,36 @@
                 <MudGrid Spacing="4" Justify="Justify.SpaceEvenly"> 
                     @if (_filteredSprites.Count == 0)
                     {
-                        string text = ViewFilter switch
+                        string ownedText = ViewFilter switch
                         {
-                            FilterOwned.Need => "owned.",
-                            FilterOwned.Owned => "needed.",
-                            _ => "All"
+                            FilterOwned.Need => "owned",
+                            FilterOwned.Owned => "needed",
+                            _ => ""
                         };
+
+                        string maxedText = MaxedFilter switch
+                        {
+                            FilterMaxed.Maxed => "not maxed",
+                            FilterMaxed.NotMaxed => "maxed",
+                            _ => ""
+                        };
+
+                        string text = string.Empty;
+
+                        if(ownedText == "")
+                        {
+                            text = $"{maxedText}.";
+
+                        }
+                        else if (maxedText == "")
+                        {
+                            text = $"{ownedText}.";
+                        }
+                        else
+                        {
+                            text = $"{ownedText} or {maxedText}.";
+                        }
+
 
                         <MudItem xs="12" class="d-flex justify-center">
                             <MudText Typo="Typo.subtitle1">All variants of this sprite are @text</MudText>
@@ -127,24 +151,60 @@ else
     [Parameter]
     public FilterOwned ViewFilter { get; set; } = FilterOwned.All;
 
-    private List<SpriteDTO> _filteredSprites => ViewFilter switch
-    {
-        FilterOwned.All => Sprites,
-        FilterOwned.Need => Sprites.Where(s => !s.OwnedData.IsOwned).ToList(),
-        FilterOwned.Owned => Sprites.Where(s => s.OwnedData.IsOwned).ToList(),
-        _ => Sprites
-    };
+    [Parameter]
+    public FilterMaxed MaxedFilter { get; set; } = FilterMaxed.All;
 
+    private List<SpriteDTO> _filteredSprites;
 
     private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync() // Load data when page first appears
     {
         SpriteService.OnChange += StateHasChanged;
-        
+
         _isLoading = false;
         // StateHasChanged() is called automatically after the async method finishes
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await ApplyFilters();
+    }
+
+    private async Task ApplyFilters()
+    {
+        _filteredSprites = Sprites;
+
+        switch (ViewFilter)
+        {         
+            case FilterOwned.Need:
+                _filteredSprites = Sprites.Where(s => !s.OwnedData.IsOwned).ToList();                
+                StateHasChanged();
+                return;
+            case FilterOwned.Owned:
+                _filteredSprites = Sprites.Where(s => s.OwnedData.IsOwned).ToList();
+                break;
+            default:
+                _filteredSprites = Sprites;
+                break;
+        }
+
+        switch (MaxedFilter)
+        {
+            case FilterMaxed.Maxed:
+                _filteredSprites = _filteredSprites.Where(s => s.OwnedData.IsMax).ToList();
+                break;
+            case FilterMaxed.NotMaxed:
+                _filteredSprites = _filteredSprites.Where(s => !s.OwnedData.IsMax).ToList();
+                break;
+            default:
+                // No additional filtering needed
+                break;
+        }
+
+        StateHasChanged();
+    }
+
 
     private async Task ToggleSprite(OwnedSprite sprite, string newStatus)
     {
