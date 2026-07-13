@@ -118,13 +118,14 @@
                 @if(_quickList)
                 {
 
-                    @foreach (var item in Items.GroupBy(x => x.SpriteData.Family))
+                    @foreach (var item in SpriteService.SpritesCollection.GroupBy(x => x.SpriteData.Family))
                     {
                         var baseSprite = BaseSprites.FirstOrDefault(s => s.Family == item.Key);
                         
                         <SpriteCardGroup 
                             BaseSprite="baseSprite"
-                            Sprites="item.ToList()" />
+                            Sprites="item.ToList()"
+                            ViewFilter="_viewFilter"/>
                         <br />
                     }
                 }
@@ -389,6 +390,8 @@ else
     private bool _smallScreen = false;
     private bool _vertical = false;
 
+    private FilterOwned _viewFilter = FilterOwned.All;
+
     // Dataset
     private List<SpriteDTO> Items = new();
 
@@ -500,18 +503,22 @@ else
         {
             case "All":
                 Items = SpriteService.SpritesCollection;
+                _viewFilter = FilterOwned.All;
                 break;
 
             case "Owned":
                 Items = SpriteService.SpritesCollection.Where(x => x.OwnedData.IsOwned).ToList();
+                _viewFilter = FilterOwned.Owned;
                 break;
 
             case "Need":
                 Items = SpriteService.SpritesCollection.Where(x => !x.OwnedData.IsOwned).ToList();
+                _viewFilter = FilterOwned.Need;
                 break;
 
             default:
                 Items = SpriteService.SpritesCollection;
+                _viewFilter = FilterOwned.All;
                 break;
         }
 

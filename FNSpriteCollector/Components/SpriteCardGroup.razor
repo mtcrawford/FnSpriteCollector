@@ -29,61 +29,78 @@
                 
             </MudGrid>
             <MudItem Class="mt-2" >
-                <MudGrid Spacing="4" Justify="Justify.SpaceEvenly">                    
-                    @foreach (var item in Sprites)
+                <MudGrid Spacing="4" Justify="Justify.SpaceEvenly"> 
+                    @if (_filteredSprites.Count == 0)
                     {
-                        <MudItem>
-                            <MudPaper Outlined="true" Elevation="3">
-                                
-                                <MudText Typo="Typo.subtitle1" class="d-flex justify-center">
-                                    @item.SpriteData.Variant
-                                </MudText>
-                                @{
-                                    string text = string.Empty;
-                                    Variant variantColor = Variant.Text;
-                                    MudBlazor.Color chipColor = Color.Info;
-                                    string icon = string.Empty;
+                        string text = ViewFilter switch
+                        {
+                            FilterOwned.Need => "owned.",
+                            FilterOwned.Owned => "needed.",
+                            _ => "All"
+                        };
 
-                                    if(item.OwnedData.IsMax)
-                                    {
-                                        text = "Maxed";
-                                        variantColor = Variant.Filled;
-                                        chipColor = Color.Success;
-                                        icon = Icons.Material.Filled.Check;
-                                    }
-                                    else if (item.OwnedData.IsOwned)
-                                    {
-                                        text = $"Owned ({item.OwnedData.Level})";
-                                        variantColor = Variant.Filled;
-                                        chipColor = Color.Info;
-                                    }
-                                    else
-                                    {
-                                        text = "Need";
-                                        variantColor = Variant.Text;
-                                        chipColor = Color.Info;
-                                    }
-
-                                    <MudMenu>
-                                        <ActivatorContent>
-                                            <MudChip T="string" 
-                                                    Icon="@icon" 
-                                                    Color="@chipColor" 
-                                                    Variant="@variantColor"
-                                                    OnClick="@(() => context.ToggleAsync())">
-                                                @text
-                                            </MudChip>
-                                        </ActivatorContent>
-                                        <ChildContent>
-                                            <MudMenuItem Label="Need" OnClick="@(() => ToggleSprite(item.OwnedData, "Need"))"/>
-                                            <MudMenuItem Label="Owned" OnClick="@(() => ToggleSprite(item.OwnedData, "Owned"))"/>
-                                            <MudMenuItem Label="Maxed" OnClick="@(() => ToggleSprite(item.OwnedData, "Maxed"))"/>
-                                        </ChildContent>
-                                    </MudMenu>
-
-                                }
-                            </MudPaper>
+                        <MudItem xs="12" class="d-flex justify-center">
+                            <MudText Typo="Typo.subtitle1">All variants of this sprite are @text</MudText>
                         </MudItem>
+                    }
+                    else
+                    {
+                        @foreach (var item in _filteredSprites)
+                        {
+                            <MudItem>
+                                <MudPaper Outlined="true" Elevation="3">
+
+                                    <MudText Typo="Typo.subtitle1" class="d-flex justify-center">
+                                        @item.SpriteData.Variant
+                                    </MudText>
+                                    @{
+                                        string text = string.Empty;
+                                        Variant variantColor = Variant.Text;
+                                        MudBlazor.Color chipColor = Color.Info;
+                                        string icon = string.Empty;
+
+                                        if (item.OwnedData.IsMax)
+                                        {
+                                            text = "Maxed";
+                                            variantColor = Variant.Filled;
+                                            chipColor = Color.Success;
+                                            icon = Icons.Material.Filled.Check;
+                                        }
+                                        else if (item.OwnedData.IsOwned)
+                                        {
+                                            text = $"Owned ({item.OwnedData.Level})";
+                                            variantColor = Variant.Filled;
+                                            chipColor = Color.Info;
+                                        }
+                                        else
+                                        {
+                                            text = "Need";
+                                            variantColor = Variant.Text;
+                                            chipColor = Color.Info;
+                                        }
+
+                                        <MudMenu>
+                                            <ActivatorContent>
+                                                <MudChip T="string" 
+                                                Icon="@icon" 
+                                                Color="@chipColor" 
+                                                Variant="@variantColor"
+                                                OnClick="@(() => context.ToggleAsync())">
+                                                    @text
+                                                </MudChip>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <MudMenuItem Label="Need" OnClick="@(() => ToggleSprite(item.OwnedData, "Need"))"/>
+                                                <MudMenuItem Label="Owned" OnClick="@(() => ToggleSprite(item.OwnedData, "Owned"))"/>
+                                                <MudMenuItem Label="Maxed" OnClick="@(() => ToggleSprite(item.OwnedData, "Maxed"))"/>
+                                            </ChildContent>
+                                        </MudMenu>
+
+                                    }
+                                </MudPaper>
+                            </MudItem>
+                        }
+
                     }
 
                 </MudGrid>
@@ -106,6 +123,18 @@ else
 
     [Parameter]
     public List<SpriteDTO> Sprites { get; set; }
+
+    [Parameter]
+    public FilterOwned ViewFilter { get; set; } = FilterOwned.All;
+
+    private List<SpriteDTO> _filteredSprites => ViewFilter switch
+    {
+        FilterOwned.All => Sprites,
+        FilterOwned.Need => Sprites.Where(s => !s.OwnedData.IsOwned).ToList(),
+        FilterOwned.Owned => Sprites.Where(s => s.OwnedData.IsOwned).ToList(),
+        _ => Sprites
+    };
+
 
     private bool _isLoading = true;
 

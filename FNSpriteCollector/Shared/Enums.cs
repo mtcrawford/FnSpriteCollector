@@ -45,3 +45,10 @@ public enum SpriteFamily
     Seven,
     Batman
 }
+
+public enum FilterOwned
+{
+    All,
+    Owned,
+    Need,
+}
