@@ -1,5 +1,4 @@
-﻿using FNSpriteCollector.Models;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using System.Text.Json;
 
 namespace FNSpriteCollector.Services;

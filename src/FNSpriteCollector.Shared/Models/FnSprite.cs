@@ -1,5 +1,4 @@
-﻿using FNSpriteCollector.Shared;
-namespace FNSpriteCollector.Models;
+﻿namespace FNSpriteCollector.Shared.Models;
 
 public class FnSprite
 {

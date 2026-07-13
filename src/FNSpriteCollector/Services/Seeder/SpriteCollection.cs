@@ -1,4 +1,4 @@
-﻿using FNSpriteCollector.Models;
+﻿using FNSpriteCollector.Shared.Models;
 
 namespace FNSpriteCollector.Services.Seeder;
 

@@ -1,4 +1,4 @@
-﻿namespace FNSpriteCollector.Models;
+﻿namespace FNSpriteCollector.Shared.Models;
 
 public class SpriteDTO
 {
