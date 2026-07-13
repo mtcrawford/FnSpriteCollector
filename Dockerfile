@@ -29,6 +29,6 @@ COPY --from=build /app/publish/wwwroot /usr/share/nginx/html
 # Copy custom nginx config (optional but recommended)
 #COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 8083
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
