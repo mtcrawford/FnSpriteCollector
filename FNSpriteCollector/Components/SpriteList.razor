@@ -149,8 +149,8 @@
                             BaseSprite="baseSprite"
                             Sprites="item.ToList()"
                             ViewFilter="_viewFilter"
-                            MaxedFilter="_maxedFilter"/>
-                        <br />
+                            MaxedFilter="_maxedFilter"
+                            SearchString="@_searchString"/>                        
                     }
                 }
                 else
@@ -161,7 +161,6 @@
                     @foreach(var item in groupedItems)
                     {
                         <SpriteCard Sprite="item" />
-                        <br />
                     }
                 }
                 

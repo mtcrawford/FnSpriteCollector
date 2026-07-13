@@ -5,9 +5,9 @@
 
 @inject FNSpriteCollector.Services.SpriteDbService SpriteService
 
-@if (!_isLoading && BaseSprite.Id > 0)
+@if (!_isLoading && _showBaseVariant)
 {    
-    <MudCard>
+    <MudCard Class="mb-2">
         <MudCardContent>
             <MudGrid Spacing="2" Justify="Justify.FlexStart">
                 <MudItem>
@@ -124,7 +124,6 @@
                                 </MudPaper>
                             </MudItem>
                         }
-
                     }
 
                 </MudGrid>
@@ -135,9 +134,9 @@
 }
 else
 {
-    if (BaseSprite.Id > 0)
+    if(_showBaseVariant)
     {
-        <SpriteLoadingProgess />                 
+        <SpriteLoadingProgess />    
     }
 }
 
@@ -154,7 +153,16 @@ else
     [Parameter]
     public FilterMaxed MaxedFilter { get; set; } = FilterMaxed.All;
 
+    [Parameter]
+    public string SearchString { get; set; } = "";
+
+    private FilterOwned _previousViewFilter { get; set; } = FilterOwned.All;
+    private FilterMaxed _previousMaxedFilter { get; set; } = FilterMaxed.All;
+    private string _previousSearchString { get; set; } = "";
+
     private List<SpriteDTO> _filteredSprites;
+
+    private bool _showBaseVariant = true;
 
     private bool _isLoading = true;
 
@@ -162,23 +170,38 @@ else
     {
         SpriteService.OnChange += StateHasChanged;
 
+        await ApplyFilters();
+
         _isLoading = false;
         // StateHasChanged() is called automatically after the async method finishes
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        await ApplyFilters();
+        Console.WriteLine("SearchString: " + SearchString);
+
+        if (ViewFilter != _previousViewFilter 
+            || MaxedFilter != _previousMaxedFilter 
+            || SearchString != _previousSearchString)
+        {
+            _previousViewFilter = ViewFilter;
+            _previousMaxedFilter = MaxedFilter;
+            _previousSearchString = SearchString;
+
+            await ApplyFilters();
+        }
     }
 
     private async Task ApplyFilters()
     {
         _filteredSprites = Sprites;
+        _showBaseVariant = true;
 
         switch (ViewFilter)
         {         
             case FilterOwned.Need:
-                _filteredSprites = Sprites.Where(s => !s.OwnedData.IsOwned).ToList();                
+                _filteredSprites = Sprites.Where(s => !s.OwnedData.IsOwned).ToList();
+                await ApplySearch();
                 StateHasChanged();
                 return;
             case FilterOwned.Owned:
@@ -202,9 +225,32 @@ else
                 break;
         }
 
+        await ApplySearch();
+
         StateHasChanged();
     }
 
+    private async Task ApplySearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchString))
+        {            
+            return;
+        }
+
+        _filteredSprites = _filteredSprites.Where(x =>
+                    x.SpriteData.Name.Contains(SearchString, StringComparison.OrdinalIgnoreCase) ||
+                    x.SpriteData.Variant.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase) ||
+                    x.SpriteData.Rarity.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase) ||
+                    $"{x.OwnedData.Level}".Contains(SearchString)).ToList();
+
+        Console.WriteLine("Count {0} - Search {1}", _filteredSprites.Count, SearchString);
+
+        if (_filteredSprites.Count == 0 && !string.IsNullOrWhiteSpace(SearchString))
+        {
+            _showBaseVariant = false;
+        }
+
+    }
 
     private async Task ToggleSprite(OwnedSprite sprite, string newStatus)
     {
