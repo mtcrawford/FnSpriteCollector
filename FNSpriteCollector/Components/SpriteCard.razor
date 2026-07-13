@@ -12,35 +12,106 @@
             <MudGrid Spacing="2" Justify="Justify.FlexStart" >
                 <MudItem>
                     <MudImage Src="@Sprite.SpriteData.ImageBase64"
-                              Width="100"
-                              Height="100"
+                              Width="80"
+                              Height="80"
                               ObjectFit="ObjectFit.Contain" />                    
                 </MudItem>
-                <MudItem>
+                <MudItem Class="pt-4">
                     <MudText Typo="Typo.h5">@Sprite.SpriteData.Name</MudText>
                     
                     <MudSpacer />
 
-                    <span class="sprite-pill sprite-rarity-@SpriteHelpers.GetRarityColor(Sprite.SpriteData.Rarity)">@Sprite.SpriteData.Rarity</span>
+                    <span class="sprite-pill sprite-rarity-@SpriteHelpers.GetRarityColor(Sprite.SpriteData.Rarity)">
+                        @Sprite.SpriteData.Rarity
+                    </span>
 
                 </MudItem>
-                <MudItem>
-                    <MudText Typo="Typo.body2">
-                        
-                        @if (Sprite.OwnedData.IsOwned)
+            </MudGrid>
+
+            <MudItem Class="mt-2" >
+                <MudGrid Spacing="4" Justify="Justify.SpaceEvenly"> 
+                    <MudItem>                        
+                        @if (Sprite.OwnedData.IsAlive)
                         {
-                            <MudChip T="string" Color="Color.Info" Icon="@Icons.Material.Filled.Check" OnClick="() => ToggleOwned(Sprite.OwnedData)">Owned</MudChip>
+                            <MudChip T="string"
+                                        Color="Color.Success"
+                                        OnClick="() => ToggleAlive(Sprite.OwnedData)">
+                                Alive
+                            </MudChip>
                         }
                         else
                         {
-                            <MudChip T="string" Color="Color.Info" Variant="Variant.Text" OnClick="() => ToggleOwned(Sprite.OwnedData)">Need</MudChip>
+                            <MudChip T="string"
+                                        Color="Color.Error"
+                                        OnClick="() => ToggleAlive(Sprite.OwnedData)">
+                                Dead
+                            </MudChip>
+                        }                        
+                    </MudItem>
+
+                    <MudSpacer />
+
+                    <MudItem>
+                        <MudSelect Value="Sprite.OwnedData.Level"
+                                   Label="Level"
+                                   ValueChanged="(int newValue) => OnLevelChanged(Sprite.OwnedData, newValue)"
+                                   Required RequiredError="You must select a Level!!!"
+                                   Margin="@Margin.Dense">
+                            <MudSelectItem Value="1">1</MudSelectItem>
+                            <MudSelectItem Value="2">2</MudSelectItem>
+                            <MudSelectItem Value="3">3</MudSelectItem>
+                            <MudSelectItem Value="4">4</MudSelectItem>
+                            <MudSelectItem Value="5">5</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+
+                    <MudSpacer />
+
+                    <MudItem>
+                        @if (Sprite.OwnedData.IsMax)
+                        {
+                            <MudChip T="string"
+                                    Color="Color.Info" 
+                                    OnClick="() => ToggleMax(Sprite.OwnedData)">
+                                Maxed
+                            </MudChip>
                         }
+                        else
+                        {
+                            <MudChip T="string" 
+                                    Color="Color.Warning" 
+                                    Variant="Variant.Text"
+                                    OnClick="() => ToggleMax(Sprite.OwnedData)">
+                                Not Maxed
+                            </MudChip>
+                        }
+                    </MudItem>
 
-                        <MudSpacer />
+                    <MudSpacer />
 
-                    </MudText>
-                </MudItem>
-            </MudGrid>
+                    <MudItem>
+                        @if (Sprite.OwnedData.IsOwned)
+                        {
+                            <MudChip T="string" Color="Color.Info" 
+                                    Icon="@Icons.Material.Filled.Check" 
+                                    OnClick="() => ToggleOwned(Sprite.OwnedData)">
+                                Owned
+                            </MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" 
+                                    Color="Color.Info"
+                                    Variant="Variant.Text" 
+                                    OnClick="() => ToggleOwned(Sprite.OwnedData)">
+                                Need
+                            </MudChip>
+                        }
+                    </MudItem>
+                    
+                </MudGrid>
+            </MudItem>
+
         </MudCardContent>
     </MudCard>
 }
@@ -68,6 +139,35 @@ else
         Console.WriteLine("Toggling Owned status for sprite: " + sprite.Id);
         sprite.IsOwned = !sprite.IsOwned;
 
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+
+    private async Task ToggleAlive(OwnedSprite sprite)
+    {
+        Console.WriteLine("Toggling Alive status for sprite: " + sprite.Id);
+        sprite.IsAlive = !sprite.IsAlive;
+
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+
+    private async Task ToggleMax(OwnedSprite sprite)
+    {
+        Console.WriteLine("Toggling Max status for sprite: " + sprite.Id);
+        sprite.IsMax = !sprite.IsMax;
+
+        await SpriteService.UpdateOwnedSpriteAsync(sprite);
+
+        StateHasChanged();
+    }
+
+    private async Task OnLevelChanged(OwnedSprite sprite, int newValue)
+    {
+        Console.WriteLine($"Updating Level for {sprite.Id} from {sprite.Level} to {newValue}");
+        sprite.Level = newValue;
         await SpriteService.UpdateOwnedSpriteAsync(sprite);
 
         StateHasChanged();
