@@ -35,6 +35,13 @@
                             <MudMenuItem Label="Simple List" 
                                          Icon="@(_quickList ? Icons.Material.Filled.Check : null)"
                                          OnClick="ToggleQuickList"/>
+
+                            <MudDivider />
+
+                            <MudMenuItem Label="Sort by Family"
+                                         Icon="@(_sortByFamily ? Icons.Material.Filled.Check : null)"
+                                         OnClick="ToggleSortByFamily" />
+
                         </MudMenu>                    
                     </MudHidden>                    
 
@@ -117,8 +124,10 @@
                 <br />
                 @if(_quickList)
                 {
-
-                    @foreach (var item in SpriteService.SpritesCollection.GroupBy(x => x.SpriteData.Family))
+                    var groupedItems = _sortByFamily ? SpriteService.SpritesCollection.GroupBy(x => x.SpriteData.Family).OrderBy(f => f.Key.ToString()) 
+                                           : SpriteService.SpritesCollection.GroupBy(x => x.SpriteData.Family);
+                    
+                    @foreach (var item in groupedItems)
                     {
                         var baseSprite = BaseSprites.FirstOrDefault(s => s.Family == item.Key);
                         
@@ -131,7 +140,10 @@
                 }
                 else
                 {
-                    @foreach(var item in Items)
+                    var groupedItems = _sortByFamily ? Items.OrderBy(f => f.SpriteData.Family.ToString()).ToList()
+                        : Items;
+                    
+                    @foreach(var item in groupedItems)
                     {
                         <SpriteCard Sprite="item" />
                         <br />
@@ -389,6 +401,7 @@ else
     private bool _quickList = false;
     private bool _smallScreen = false;
     private bool _vertical = false;
+    private bool _sortByFamily = false;
 
     private FilterOwned _viewFilter = FilterOwned.All;
 
@@ -528,6 +541,12 @@ else
     private void ToggleQuickList()
     {
         _quickList = !_quickList;
+        StateHasChanged();
+    }
+
+    private void ToggleSortByFamily()
+    {
+        _sortByFamily = !_sortByFamily;
         StateHasChanged();
     }
 
