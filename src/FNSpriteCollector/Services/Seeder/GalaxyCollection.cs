@@ -15,7 +15,7 @@ internal class GalaxyCollection : SpriteCollection
         {
             new FnSprite
             {
-                Id = SpriteId.Water,
+                Id = SpriteId.Galaxy_Water,
                 Name = "Galaxy Water",
                 Rarity = SpriteRarity.Special,
                 Variant = SpriteVariant.Galaxy,
@@ -105,15 +105,6 @@ internal class GalaxyCollection : SpriteCollection
             },
             new FnSprite
             {
-                Id = SpriteId.Galaxy_Grim,
-                Name = "Galaxy Grim",
-                Rarity = SpriteRarity.Special,
-                Variant = SpriteVariant.Galaxy,
-                Family = SpriteFamily.Grim,
-                ImageBase64 = await GetImageAsBase64Async("grim_galaxy.webp")
-            },
-            new FnSprite
-            {
                 Id = SpriteId.Galaxy_Fishy,
                 Name = "Galaxy Fishy",
                 Rarity = SpriteRarity.Special,
@@ -133,6 +124,7 @@ internal class GalaxyCollection : SpriteCollection
             new FnSprite
             {
                 Id = SpriteId.Galaxy_Aura,
+                Name = "Galaxy Aura",
                 Rarity = SpriteRarity.Special,
                 Variant = SpriteVariant.Galaxy,
                 Family = SpriteFamily.Aura,
