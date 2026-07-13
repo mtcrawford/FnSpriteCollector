@@ -26,8 +26,8 @@ public class SpriteDbService
         Console.WriteLine("Initializing SpriteDbService....");
 
         // Open the database (this will create it if it doesn't exist)
-        await _db.GetAllAsync<FnSprite>(SpriteStoreName); // Ensures DB is initialized
-        await _db.GetAllAsync<OwnedSprite>(OwnedStoreName); // Ensures DB is initialized
+        Sprites = await _db.GetAllAsync<FnSprite>(SpriteStoreName); // Ensures DB is initialized
+        OwnedSprites = await _db.GetAllAsync<OwnedSprite>(OwnedStoreName); // Ensures DB is initialized
 
         await BuildCollection(); // Build the collection after initialization
     }
@@ -74,12 +74,16 @@ public class SpriteDbService
         OnChange?.Invoke();
     }
 
-    public async Task UpdateSpriteAsync(FnSprite sprite)
+    public async Task UpdateSpriteAsync(FnSprite sprite, bool refresh = true)
     {
         Console.WriteLine($"Updating sprite with ID {sprite.Id}");
 
         await _db.SetItemAsync(SpriteStoreName, sprite.Id.ToString(), sprite);
-        await LoadSpritesAsync();
+        
+        if (refresh)
+        { 
+            await LoadSpritesAsync(); 
+        }
     }
 
     public async Task UpdateOwnedSpriteAsync(OwnedSprite sprite)
@@ -100,6 +104,12 @@ public class SpriteDbService
     {
         await _db.DeleteItemAsync(OwnedStoreName, id.ToString());
         await LoadOwnedSpritesAsync();
+    }
+
+    public async Task ClearSprites()
+    {
+        await _db.ClearStoreAsync(SpriteStoreName);
+        await LoadSpritesAsync();
     }
 
     private async Task BuildCollection()

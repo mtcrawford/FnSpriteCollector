@@ -4,7 +4,7 @@
 
 @*inject FNSpriteCollector.Services.SpriteService SpriteService *@
 @inject FNSpriteCollector.Services.SpriteDbService SpriteService
-@inject FNSpriteCollector.Services.SpriteSeederDTO Seeder
+@inject FNSpriteCollector.Services.DbUpdateService DbUpdateService;
 
 
 @if (!_isLoading)
@@ -388,7 +388,7 @@
             {
                 <br />
                 <SpriteLoadingProgess />
-                <MudText Typo="Typo.subtitle1" Align="Align.Center">@Seeder.Message</MudText>
+                <MudText Typo="Typo.subtitle1" Align="Align.Center">@DbUpdateService.Message</MudText>
             }
 
         </MudContainer>    
@@ -397,7 +397,7 @@
 else
 {
     <MudProgressCircular Indeterminate="true" />
-    <MudText Typo="Typo.subtitle1" Align="Align.Center">@Seeder.Message</MudText>
+    <MudText Typo="Typo.subtitle1" Align="Align.Center">@DbUpdateService.Message</MudText>
 }
 
 
@@ -428,7 +428,7 @@ else
 
     protected override async Task OnInitializedAsync() // Load data when page first appears
     {
-        Seeder.OnChange += StateHasChanged;
+        DbUpdateService.OnChange += StateHasChanged;
         SpriteService.OnChange += StateHasChanged;           
 
         _isLoading = false;        
@@ -440,7 +440,7 @@ else
         if (firstRender)
         {
             // Safe to call JS interop here
-            await Seeder.SeedInitialSpritesAsync();
+            await DbUpdateService.CheckAndUpdateDbAsync();
 
             await SpriteService.LoadSpritesAsync();
 
@@ -690,7 +690,7 @@ else
 
     private void BreakpointChanged(Breakpoint breakpoint)
     {
-        Console.WriteLine("BP change: {0}", breakpoint);
+        //Console.WriteLine("BP change: {0}", breakpoint);
         _currentBreakpoint = breakpoint;
 
         bool small = false;
@@ -717,7 +717,7 @@ else
         _smallScreen = small;
         _vertical = vertical;
 
-        Console.WriteLine("Small Screen?: {0}   Vertical?: {1}", _smallScreen, _vertical);
+        //Console.WriteLine("Small Screen?: {0}   Vertical?: {1}", _smallScreen, _vertical);
 
         StateHasChanged();        
     }

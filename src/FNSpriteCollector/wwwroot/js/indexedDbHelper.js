@@ -14,6 +14,10 @@ export async function openDb(dbName, version) {
             if (!database.objectStoreNames.contains("OwnedSprites")) {
                 database.createObjectStore("OwnedSprites", { keyPath: "Id" });
             }            
+
+            if (!database.objectStoreNames.contains("SpritesDbVersion")) {
+                database.createObjectStore("SpritesDbVersion", { keyPath: "Version" });
+            }
         };
 
         request.onsuccess = (event) => {

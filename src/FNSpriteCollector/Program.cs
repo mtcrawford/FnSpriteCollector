@@ -11,11 +11,12 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 builder.Services.AddSingleton<IndexedDbService>();
+builder.Services.AddSingleton<DbVersionService>();
 builder.Services.AddScoped<SpriteDbService>();
 
 //builder.Services.AddScoped<LocalStorageService>();
 //builder.Services.AddScoped<SpriteService>();
-builder.Services.AddScoped<SpriteSeederDTO>();
+builder.Services.AddScoped<DbUpdateService>();
 
 builder.Services.AddMudServices();
 
