@@ -8,7 +8,7 @@ internal class DbUpdateService
     private DbVersionInfo _currentVersion = new DbVersionInfo
     { 
         Version = 1, 
-        SpriteCount = 81 
+        SpriteCount = 83 
     };
 
     private readonly HttpClient _http;

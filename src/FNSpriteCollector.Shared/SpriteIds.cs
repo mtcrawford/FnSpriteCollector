@@ -22,6 +22,8 @@ public static class SpriteId
     public const int Air = 67;
     public const int Seven = 72;
     public const int Batman = 77;
+    public const int ViniJr = 82;
+    public const int Pollo = 83;
 
     // Gold
     public const int Gold_Water = 12;

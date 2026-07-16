@@ -45,5 +45,7 @@ public enum SpriteFamily
     Grim,
     Air,
     Seven,
-    Batman
+    Batman,
+    ViniJr,
+    Pollo
 }

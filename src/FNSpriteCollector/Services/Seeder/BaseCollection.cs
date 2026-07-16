@@ -186,6 +186,24 @@ internal class BaseCollection : SpriteCollection
                 Family = SpriteFamily.Batman,
                 ImageBase64 = await GetImageAsBase64Async("batman_base.webp")
             },
+            new FnSprite
+            {
+                Id = SpriteId.ViniJr,
+                Name = "Vini Jr.",
+                Rarity = SpriteRarity.Mythic,
+                Variant = SpriteVariant.Base,
+                Family = SpriteFamily.ViniJr,
+                ImageBase64 = await GetImageAsBase64Async("vinijr_base.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Pollo,
+                Name = "Pollo",
+                Rarity = SpriteRarity.Mythic,
+                Variant = SpriteVariant.Base,
+                Family = SpriteFamily.Pollo,
+                ImageBase64 = await GetImageAsBase64Async("pollo_base.webp")
+            },
         };
     }
 }
