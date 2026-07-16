@@ -6,7 +6,7 @@ namespace FNSpriteCollector.Services;
 public class IndexedDbService : IAsyncDisposable
 {
     private const string DB_NAME = "Sprites";
-    private const int DB_VERSION = 2;
+    private const int DB_VERSION = 3;
 
     private readonly IJSRuntime _js;
     private IJSObjectReference? _module;
