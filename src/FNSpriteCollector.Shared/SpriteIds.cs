@@ -19,6 +19,9 @@ public static class SpriteId
     public const int Aura = 50;
     public const int Boss = 54;
     public const int Grim = 58;
+    public const int Air = 67;
+    public const int Seven = 72;
+    public const int Batman = 77;
 
     // Gold
     public const int Gold_Water = 12;
@@ -36,6 +39,9 @@ public static class SpriteId
     public const int Gold_Aura = 51;
     public const int Gold_Boss = 55;
     public const int Gold_Grim = 59;
+    public const int Gold_Air = 68;
+    public const int Gold_Seven = 73;
+    public const int Gold_Batman = 78;
 
     // Gummy
     public const int Gummy_Water = 22;
@@ -53,6 +59,10 @@ public static class SpriteId
     public const int Gummy_Aura = 52;
     public const int Gummy_Boss = 56;
     public const int Gummy_Grim = 60;
+    public const int Gummy_Air = 69;
+    public const int Gummy_Seven = 74;
+    public const int Gummy_Batman = 79;
+
 
     // Galaxy
     public const int Galaxy_Water = 32;
@@ -70,6 +80,9 @@ public static class SpriteId
     public const int Galaxy_Aura = 53;
     public const int Galaxy_Boss = 57;
     public const int Galaxy_Grim = 61;
+    public const int Galaxy_Air = 70;
+    public const int Galaxy_Seven = 75;
+    public const int Galaxy_Batman = 80;
 
     // Holofoil
     public const int Holofoil_Water = 62;
@@ -77,4 +90,7 @@ public static class SpriteId
     public const int Holofoil_Ghost = 64;
     public const int Holofoil_King = 65;
     public const int Holofoil_Striker = 66;
+    public const int Holofoil_Air = 71;
+    public const int Holofoil_Seven = 76;
+    public const int Holofoil_Batman = 81;
 }

@@ -148,6 +148,33 @@ internal class GummyCollection : SpriteCollection
                 Family = SpriteFamily.Grim,
                 ImageBase64 = await GetImageAsBase64Async("grim_candy.webp")
             },
+            new FnSprite
+            {
+                Id = SpriteId.Gummy_Air,
+                Name = "Gummy Air",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Candy,
+                Family = SpriteFamily.Air,
+                ImageBase64 = await GetImageAsBase64Async("air_candy.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Gummy_Seven,
+                Name = "Gummy Seven",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Candy,
+                Family = SpriteFamily.Seven,
+                ImageBase64 = await GetImageAsBase64Async("seven_candy.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Gummy_Batman,
+                Name = "Gummy Batman",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Candy,
+                Family = SpriteFamily.Batman,
+                ImageBase64 = await GetImageAsBase64Async("batman_candy.webp")
+            },
         };
     }   
 }

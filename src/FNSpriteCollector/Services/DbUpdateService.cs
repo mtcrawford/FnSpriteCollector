@@ -8,7 +8,7 @@ internal class DbUpdateService
     private DbVersionInfo _currentVersion = new DbVersionInfo
     { 
         Version = 1, 
-        SpriteCount = 66 
+        SpriteCount = 81 
     };
 
     private readonly HttpClient _http;
@@ -110,16 +110,6 @@ internal class DbUpdateService
             default:
                 SetMessage($"Unknown database version {_dbVersion.Version}. Updating Sprites.");
                 return true;
-        }
-    }
-
-    private async Task CheckForVersionZero()
-    {
-        if (_dbVersion.Version == 0)
-        {
-            SetMessage("Detected Version 0. Initializing Database...");
-            await _spriteService.ClearSprites();
-            Sprites = new List<SpriteDTO>();
         }
     }
 

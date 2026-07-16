@@ -148,6 +148,33 @@ internal class GalaxyCollection : SpriteCollection
                 Family = SpriteFamily.Grim,
                 ImageBase64 = await GetImageAsBase64Async("grim_galaxy.webp")
             },
+            new FnSprite
+            {
+                Id = SpriteId.Galaxy_Air,
+                Name = "Galaxy Air",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Galaxy,
+                Family = SpriteFamily.Air,
+                ImageBase64 = await GetImageAsBase64Async("air_galaxy.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Galaxy_Seven,
+                Name = "Galaxy Seven",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Galaxy,
+                Family = SpriteFamily.Seven,
+                ImageBase64 = await GetImageAsBase64Async("seven_galaxy.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Galaxy_Batman,
+                Name = "Galaxy Batman",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Galaxy,
+                Family = SpriteFamily.Batman,
+                ImageBase64 = await GetImageAsBase64Async("batman_galaxy.webp")
+            },
         };
     }
 }

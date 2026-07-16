@@ -148,6 +148,33 @@ internal class GoldCollection : SpriteCollection
                 Family = SpriteFamily.Grim,
                 ImageBase64 = await GetImageAsBase64Async("grim_gold.webp")
             },
+            new FnSprite
+            {
+                Id = SpriteId.Gold_Air,
+                Name = "Gold Air",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Gold,
+                Family = SpriteFamily.Air,
+                ImageBase64 = await GetImageAsBase64Async("air_gold.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Gold_Seven,
+                Name = "Gold Seven",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Gold,
+                Family = SpriteFamily.Seven,
+                ImageBase64 = await GetImageAsBase64Async("seven_gold.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Gold_Batman,
+                Name = "Gold Batman",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Gold,
+                Family = SpriteFamily.Batman,
+                ImageBase64 = await GetImageAsBase64Async("batman_gold.webp")
+            },
         };
     }
 }

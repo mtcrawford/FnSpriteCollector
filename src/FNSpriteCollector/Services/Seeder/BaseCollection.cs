@@ -159,6 +159,33 @@ internal class BaseCollection : SpriteCollection
                 Family = SpriteFamily.Grim,
                 ImageBase64 = await GetImageAsBase64Async("grim_base.webp")
             },
+            new FnSprite
+            {
+                Id = SpriteId.Air,
+                Name = "Air",
+                Rarity = SpriteRarity.Rare,
+                Variant = SpriteVariant.Base,
+                Family = SpriteFamily.Air,
+                ImageBase64 = await GetImageAsBase64Async("air_base.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Seven,
+                Name = "Seven",
+                Rarity = SpriteRarity.Legendary,
+                Variant = SpriteVariant.Base,
+                Family = SpriteFamily.Seven,
+                ImageBase64 = await GetImageAsBase64Async("seven_base.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Batman,
+                Name = "Batman",
+                Rarity = SpriteRarity.Mythic,
+                Variant = SpriteVariant.Base,
+                Family = SpriteFamily.Batman,
+                ImageBase64 = await GetImageAsBase64Async("batman_base.webp")
+            },
         };
     }
 }

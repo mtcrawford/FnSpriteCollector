@@ -57,6 +57,33 @@ internal class HolofoilCollection : SpriteCollection
                 Family = SpriteFamily.Striker,
                 ImageBase64 = await GetImageAsBase64Async("striker_holofoil.webp")
             },
+            new FnSprite
+            {
+                Id = SpriteId.Holofoil_Air,
+                Name = "Holofoil Air",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.Air,
+                ImageBase64 = await GetImageAsBase64Async("air_holofoil.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Holofoil_Seven,
+                Name = "Holofoil Seven",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.Seven,
+                ImageBase64 = await GetImageAsBase64Async("seven_holofoil.webp")
+            },
+            new FnSprite
+            {
+                Id = SpriteId.Holofoil_Batman,
+                Name = "Holofoil Batman",
+                Rarity = SpriteRarity.Special,
+                Variant = SpriteVariant.Holofoil,
+                Family = SpriteFamily.Batman,
+                ImageBase64 = await GetImageAsBase64Async("batman_holofoil.webp")
+            },
         };
     }
 }
