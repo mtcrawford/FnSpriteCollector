@@ -2,6 +2,8 @@
 
 public static class SpriteId
 {
+    public const int SPRITE_COUNT = 91;
+
     // Base
     public const int Water = 1;
     public const int Earth = 2;
@@ -95,4 +97,14 @@ public static class SpriteId
     public const int Holofoil_Air = 71;
     public const int Holofoil_Seven = 76;
     public const int Holofoil_Batman = 81;
+
+    // Cube
+    public const int Cube_Batman = 84;
+    public const int Cube_Earth = 85;
+    public const int Cube_Fire = 86;
+    public const int Cube_Dream = 87;
+    public const int Cube_Punk = 88;
+    public const int Cube_Fishy = 89;
+    public const int Cube_Boss = 90;
+    public const int Cube_Grim = 91;
 }

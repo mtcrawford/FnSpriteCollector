@@ -1,4 +1,5 @@
 ﻿using FNSpriteCollector.Services.Seeder;
+using FNSpriteCollector.Shared;
 using FNSpriteCollector.Shared.Models;
 
 namespace FNSpriteCollector.Services;
@@ -7,8 +8,8 @@ internal class DbUpdateService
 {
     private DbVersionInfo _currentVersion = new DbVersionInfo
     { 
-        Version = 1, 
-        SpriteCount = 83 
+        Version = 2, 
+        SpriteCount = SpriteId.SPRITE_COUNT 
     };
 
     private readonly HttpClient _http;
@@ -184,12 +185,14 @@ internal class DbUpdateService
         var gummySprites = new GummyCollection(_http);
         var galaxySprites = new GalaxyCollection(_http);
         var holofoilSprites = new HolofoilCollection(_http);
+        var cubeSprites = new CubeCollection(_http);
 
         await baseSprites.LoadSprites();
         await goldSprites.LoadSprites();
         await gummySprites.LoadSprites();
         await galaxySprites.LoadSprites();
         await holofoilSprites.LoadSprites();
+        await cubeSprites.LoadSprites();
 
         Collection = new List<FnSprite>();
         Collection.AddRange(baseSprites.Sprites);
@@ -197,6 +200,7 @@ internal class DbUpdateService
         Collection.AddRange(gummySprites.Sprites);
         Collection.AddRange(galaxySprites.Sprites);
         Collection.AddRange(holofoilSprites.Sprites);
+        Collection.AddRange(cubeSprites.Sprites);
 
         SetMessage($"Sprites Loaded from Collections ({Collection.Count})");
     }
