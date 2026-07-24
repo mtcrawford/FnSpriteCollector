@@ -168,7 +168,8 @@ else
 
     protected override async Task OnInitializedAsync() // Load data when page first appears
     {
-        SpriteService.OnChange += StateHasChanged;
+        SpriteService.OnChange += HandleOnChange;
+        SpriteService.OnChange += StateHasChanged;        
 
         await ApplyFilters();
 
@@ -190,6 +191,11 @@ else
 
             await ApplyFilters();
         }
+    }
+
+    private void HandleOnChange()
+    {
+        ApplyFilters().Wait();
     }
 
     private async Task ApplyFilters()
@@ -276,5 +282,10 @@ else
 
         await SpriteService.UpdateOwnedSpriteAsync(sprite);
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        SpriteService.OnChange -= HandleOnChange;
     }
 }
